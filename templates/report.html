@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Waste Bin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h2>Report Waste Bin</h2>
+    <form method="POST">
+        <label for="location">Location Name:</label>
+        <input type="text" id="location" name="location" placeholder="Enter location name" required>
+
+        <label for="landmark">Landmark:</label>
+        <input type="text" id="landmark" name="landmark" placeholder="Enter nearby landmark">
+
+        <label for="pincode">Pincode:</label>
+        <input type="text" id="pincode" name="pincode" placeholder="Enter pincode" required>
+
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+            <option value="" disabled selected>Select bin status</option>
+            <option value="Empty">Empty</option>
+            <option value="Half">Half</option>
+            <option value="Full">Full</option>
+        </select>
+
+        <button type="submit">Submit Report</button>
+    </form>
+    <a href="/admin">Go to Admin Dashboard</a>
+</div>
+</body>
+</html>

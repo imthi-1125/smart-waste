@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+<div class="container">
+    <h2>Waste Bin Reports</h2>
+
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Location</th>
+            <th>Landmark</th>
+            <th>Pincode</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+        </tr>
+        {% for row in reports %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[7] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Map -->
+    <h3 style="margin-top: 30px;">Bin Locations</h3>
+    <div id="map" style="height: 400px; margin-top: 10px;"></div>
+
+    <!-- Bar Chart -->
+    <canvas id="statusChart" style="margin-top: 30px;"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // --- Chart ---
+    var emptyCount = {{ reports|selectattr("4","equalto","Empty")|list|length }};
+    var halfCount = {{ reports|selectattr("4","equalto","Half")|list|length }};
+    var fullCount = {{ reports|selectattr("4","equalto","Full")|list|length }};
+
+    var ctx = document.getElementById('statusChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Empty', 'Half', 'Full'],
+            datasets: [{
+                label: 'Bin Status Count',
+                data: [emptyCount, halfCount, fullCount],
+                backgroundColor: ['#2ecc71','#f1c40f','#e74c3c']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // --- Map ---
+    var map = L.map('map').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+    {% for row in reports %}
+        L.marker([{{ row[5] }}, {{ row[6] }}]).addTo(map)
+            .bindPopup("<b>{{ row[1] }}</b><br>Landmark: {{ row[2] }}<br>Status: {{ row[4] }}");
+    {% endfor %}
+</script>
+</body>
+</html>
